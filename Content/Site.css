@@ -1,0 +1,42 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+#selectedBranchCodes .feeBranch {
+    border: 1px solid #999;
+    padding: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    margin: 5px 5px 5px 0;
+    display: inline-block;
+    background-color: #eee;
+}
+
+#selectedBranchCodes .feeBranch .remove {
+    background: url(/images/remove.png) no-repeat 4px 2px;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    margin: 0 0 0 3px;
+}

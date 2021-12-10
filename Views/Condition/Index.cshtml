@@ -1,0 +1,141 @@
+﻿@model IEnumerable<OrbitCovidConditionConfigurator.Models.Condition>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@using (Html.BeginForm())
+{
+    <p>
+        <table>
+            <tr>
+                <td>
+                    @Html.Label("Search")
+                </td>
+                <td>
+                    @Html.TextBox("Search")
+                </td>
+                <td>
+                    <input type="submit" value="Search" class="btn-primary" />
+                </td>
+                <td>
+                </td>
+
+            </tr>
+            <tr>
+                <th>
+                    <a class="btn btn-success" onclick="location.href='@Url.Action("Create", "Condition")'">Add New</a>
+                </th>
+
+            </tr>
+        </table>
+    </p>
+    if (Model == null)
+    {
+        <p>Empty list</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ValidFrom)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ValidTo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Brand)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.OutletCode)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SegmentType)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Airline)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Route)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BranchCode)
+                    </th>
+
+
+
+                </tr>
+
+                @foreach (var item in Model)
+                {
+            <tr>
+                <td>
+                    <a class="btn btn-xs" onclick="location.href='@Url.Action("Edit", "Condition", new { id = item.Id})'">Edit</a>
+                </td>
+                <td>
+                    <input name="selectedIds" type="checkbox" class="check" value="@item.Id" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValidFrom, new { @Value = item.ValidFrom.ToString("yyyy/MM/dd") })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValidTo, new { @Value = item.ValidTo.ToString("yyyy/MM/dd") })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Brand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OutletCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SegmentType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Airline)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Route)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BranchCode)
+                </td>
+
+
+            </tr>
+                }
+
+                <tr>
+                    <td>
+                        <input type="submit" value="Delete Selected" class="btn-danger" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script src="~/Scripts/jquery-ui-1.13.0.min.js"></script>
+        <script>
+
+        </script>
+
+    }
+}

@@ -1,0 +1,314 @@
+﻿@model OrbitCovidConditionConfigurator.Models.Condition
+
+@{
+    ViewBag.Title = "Edit";
+
+    List<SelectListItem> branchList = new List<SelectListItem>();
+    List<SelectListItem> outletList = new List<SelectListItem>();
+
+    outletList.Add(new SelectListItem() { Text = "Choose an outlet", Value = "", Selected = true });
+    branchList.Add(new SelectListItem() { Text = "Choose a branch", Value = "", Selected = true });
+
+    foreach (string outlet in Model.Outlets.GroupBy(o => o.OutletCode).Select(o => o.Key))
+    {
+        outletList.Add(new SelectListItem() { Text = outlet, Value = outlet, Selected = false });
+    }
+
+    foreach (OrbitCovidConditionConfigurator.Models.Outlet outlet in Model.Outlets)
+    {
+        branchList.Add(new SelectListItem() { Text = outlet.BranchCode, Value = outlet.BranchCode, Selected = false });
+    }
+    List<SelectListItem> segmentListItem = new List<SelectListItem>();
+    segmentListItem.Add(new SelectListItem() { Text = "Choose item type", Value = "-1", Selected = true });
+
+    foreach (OrbitCovidConditionConfigurator.Enums.SegmentType segmentType in Model.SegmentTypes)
+    {
+        segmentListItem.Add(new SelectListItem() { Text = segmentType.ToString(), Value = ((int)segmentType).ToString(), Selected = false });
+    }
+    List<SelectListItem> routeListItem = new List<SelectListItem>();
+    foreach (OrbitCovidConditionConfigurator.Enums.Route route in Model.Routes)
+    {
+        routeListItem.Add(new SelectListItem() { Text = route.ToString(), Value = ((int)route).ToString(), Selected = false });
+    }
+    List<SelectListItem> brandListItem = new List<SelectListItem>();
+    brandListItem.Add(new SelectListItem() { Text = "Choose Brand", Value = "-1", Selected = true });
+
+    foreach (OrbitCovidConditionConfigurator.Enums.Brand brand in Model.Brands)
+    {
+        brandListItem.Add(new SelectListItem() { Text = brand.ToString(), Value = ((int)brand).ToString(), Selected = false });
+    }
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Condition</h4>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Brand, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.Brand, brandListItem, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Brand, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.SegmentType, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.SegmentType, segmentListItem, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.SegmentType, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Airline, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Airline, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Airline, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Route, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.Route, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.OutletCode, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(model => model.OutletCode, new { htmlAttributes = new { @class = "form-control" } })
+         </div>
+    </div>
+
+    <div id="divBranch" class="form-group">
+        @Html.Label("Add Branch", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-9">
+            @Html.DropDownList("ddlSelBranch", branchList, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="editor-label">@Html.LabelFor(m => m.BranchCode, htmlAttributes: new { @class = "control-label col-md-2" })</div>
+        <div class="col-md-9">
+            @Html.TextBoxFor(m => m.BranchCode, new { Value = string.Join(",", Model.BranchCode) })
+            <input type="text" id="BranchCodes" hidden />
+            <div id="selectedBranchCodes"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.CovidConditon, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.CovidConditon, new { htmlAttributes = new { @class = "form-control", @rows = "10", @cols = "80" } })
+            @Html.ValidationMessageFor(model => model.CovidConditon, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ValidFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ValidFrom, new { @Value = Model.ValidFrom.ToString("yyyy-MM-dd"), @class = "datepicker" })
+            @Html.ValidationMessageFor(model => model.ValidFrom, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ValidTo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ValidTo, new { @Value = Model.ValidTo.ToString("yyyy-MM-dd"), @class = "datepicker" })
+            @Html.ValidationMessageFor(model => model.ValidTo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save Changes" class="btn btn-success" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-ui-1.13.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".datepicker").datepicker(
+                {
+                    dateFormat: "yy-mm-dd",
+                    changemonth: true,
+                    changeyear: true
+                });
+
+            $("#Id").prop("readonly", true);
+            $("#Id").css("background", "LightGrey");
+
+            $("#OutletCode").prop("readonly", true);
+            $("#OutletCode").css("background", "LightGrey");
+
+            $("#Route").prop("readonly", true);
+            $("#Route").css("background", "LightGrey");
+            $("#ValidFrom").val(formatDate($("#ValidFrom").val()));
+            $("#ValidTo").val(formatDate($("#ValidTo").val()));
+
+            var branchArray = $("#BranchCode").val().split(",");
+            if (branchArray !== "" && branchArray !== null && branchArray !== undefined) {
+                var i = branchArray.length;
+                var tCode = "";
+                var tValue = "";
+                while (i--) {
+                    tCode = branchArray[i];
+                    $("#ddlSelBranch > option").each(function () {
+                        if (tCode === this.value) {
+                            tValue = this.text;
+                            managefeeBranchSelections(tCode, tValue);
+                        }
+                    });
+                }
+            }
+            ///Refresh Branch Dropdown 
+            var idVal = $("#Id").val();
+            if (idVal > 0) {
+                refreshBranchListDropdown();
+            }
+
+            $("#SegmentType").on('change', function () {
+                var name = $("#SegmentType option:selected").text();
+                var val = $("#SegmentType").val();
+                if (name !== "Air") {
+                    $("#Airline").prop("readonly", true);
+                    $("#Airline").css("background", "LightGrey");
+                }
+                else {
+                    $("#Airline").prop("readonly", false);
+                    $("#Airline").css("background", "white");
+                }
+
+            });
+            $("#ddlSelBranch").on('change', function () {
+                var name = $("#ddlSelBranch option:selected").text();
+                var val = $("#ddlSelBranch").val();
+                managefeeBranchSelections(val, name);
+
+            });
+            //add user selection of traveller - check for duplicates
+            function managefeeBranchSelections(tCode, tName) {
+                if ($("#selectedBranchCodes .feeBranch").length && $("#selectedBranchCodes").find("[data-conditionBranchCode='" + tCode + "']").length > 0) {
+                    return false;
+                }
+                var div = $('<div />').html(tName).attr("data-conditionBranchCode", tCode).attr('class', 'feeBranch');
+                var anchor = $('<a />').attr('class', 'remove').attr("title", "Remove").attr("href", "#").text(" ").on("click", function (e) {
+                    $(this).parent().fadeOut(300, function () { $(this).remove(); updateSelectedBranchCodes(); });
+                    e.preventDefault();
+                });
+                div.append(anchor);
+                $("#selectedBranchCodes").append(div);
+                updateSelectedBranchCodes();
+            }
+
+            //Populate SelectedBranchCodes into hidden field
+            function updateSelectedBranchCodes() {
+                var selectedBranchCodes = [];
+                $("#selectedBranchCodes .feeBranch").each(function () {
+
+                    selectedBranchCodes.push($(this).data("conditionbranchcode"));
+                });
+                $("#BranchCodes").val(selectedBranchCodes.join(","));
+                $("#BranchCode").val($("#BranchCodes").val());
+                $("#ddlSelBranch").val("");
+            }
+            function refreshBranchListDropdown() {
+                let dropdown = $('#ddlSelBranch');
+
+                dropdown.empty();
+
+                dropdown.append('<option selected="true" disabled>Choose Branch</option>');
+                dropdown.prop('selectedIndex', 0);
+
+                var outletCode = $('#OutletCode').val()
+                var brandName = $("#Brand option:selected").text();
+                var brandVal = $("#Brand").val();
+
+                const url = '/Condition/GetOutletBranchList?outletCode=' + outletCode + '&brand=' + brandVal;
+
+                // Re Populate dropdown with list of Branches
+                $.getJSON(url, function (data) {
+                    $.each(data, function (key, entry) {
+                        dropdown.append($('<option></option>').attr('value', entry).text(entry));
+                    })
+                });
+            }
+            function refreshOutletListDropdown() {
+                let dropdown = $('#OutletCode');
+
+                dropdown.empty();
+
+                dropdown.append('<option selected="true" disabled>Choose Outlet</option>');
+                dropdown.prop('selectedIndex', 0);
+
+                var brandName = $("#Brand option:selected").text();
+                var brandVal = $("#Brand").val();
+
+                const url = '/Condition/GetOutletList?brand=' + brandVal;
+
+                // Re Populate dropdown with list of Outlet
+                $.getJSON(url, function (data) {
+                    $.each(data, function (key, entry) {
+                        dropdown.append($('<option></option>').attr('value', entry).text(entry));
+                    })
+                });
+            }
+            function formatDate(date) {
+
+                if (date == "Mon Jan 01 0001 00:00:00 GMT+0000 (GMT Daylight Time)")
+                    return "-";
+                else {
+                    var dat = new Date(Date.parse(date));
+                    if (dat !== undefined) {
+                        var month = dat.getMonth() + 1;
+                        var strMonth = month < 10 ? "0" + month : month;
+                        var day = dat.getDay() + 1;
+                        var strDay = day < 10 ? "0" + day : day;
+                        var year = dat.getFullYear() ;
+
+                        return year + "-" + strMonth + "-" + strDay;
+                    }
+                    else return date;
+                }
+            }
+            $("#OutletCode").change(function () {
+
+                refreshBranchListDropdown();
+            });
+            $("#Brand").change(function () {
+
+                refreshOutletListDropdown();
+                refreshBranchListDropdown();
+            });
+        });
+    </script>
+
+}
+
