@@ -9,12 +9,12 @@
     outletList.Add(new SelectListItem() { Text = "Choose an outlet", Value = "", Selected = true });
     branchList.Add(new SelectListItem() { Text = "Choose a branch", Value = "", Selected = true });
 
-    foreach (string outlet in Model.Outlets.GroupBy(o => o.OutletCode).Select(o => o.Key))
+    foreach (string outlet in Model?.Outlets?.GroupBy(o => o.OutletCode)?.Select(o => o.Key))
     {
         outletList.Add(new SelectListItem() { Text = outlet, Value = outlet, Selected = false });
     }
 
-    foreach (OrbitCovidConditionConfigurator.Models.Outlet outlet in Model.Outlets)
+    foreach (OrbitCovidConditionConfigurator.Models.Outlet outlet in Model?.Outlets)
     {
         branchList.Add(new SelectListItem() { Text = outlet.BranchCode, Value = outlet.BranchCode, Selected = false });
     }

@@ -82,6 +82,7 @@
             <tr>
                 <td>
                     <a class="btn btn-xs" onclick="location.href='@Url.Action("Edit", "Condition", new { id = item.Id})'">Edit</a>
+                    <a class="btn btn-primary btn-xs" onclick="location.href='@Url.Action("Details", "Condition", new { id = item.Id})'">Details</a>
                 </td>
                 <td>
                     <input name="selectedIds" type="checkbox" class="check" value="@item.Id" />

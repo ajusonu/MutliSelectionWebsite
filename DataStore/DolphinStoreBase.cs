@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 
@@ -9,10 +10,11 @@ namespace OrbitCovidConditionConfigurator.DataStore
     /// </summary>
     public class DolphinStoreBase
     {
+        protected static readonly ILog _log = LogManager.GetLogger(typeof(DolphinStoreBase));
         private static string ConnectionStringName => "Dolphin";
 
         /// <summary>
-        /// Helper function to get the connection 
+        /// Get Dolphin the connection 
         /// </summary>
         /// <returns></returns>
         protected static SqlConnection GetConnection()
@@ -28,8 +30,9 @@ namespace OrbitCovidConditionConfigurator.DataStore
             }
             catch (Exception ex)
             {
-                throw ex;
+                _log.Error($" Connection Error {ex.ToString()}");
             }
+            return null;
         }
     }
 }

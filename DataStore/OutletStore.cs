@@ -43,6 +43,7 @@ namespace OrbitCovidConditionConfigurator.DataStore
             }
             catch (Exception ex)
             {
+                _log.Error($" Get Outlets Error {ex.ToString()}");
                 return null;
             }
             return outlets;

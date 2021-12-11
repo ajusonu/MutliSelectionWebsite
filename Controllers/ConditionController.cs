@@ -1,4 +1,5 @@
-﻿using OrbitCovidConditionConfigurator.DataStore;
+﻿using log4net;
+using OrbitCovidConditionConfigurator.DataStore;
 using OrbitCovidConditionConfigurator.Enums;
 using OrbitCovidConditionConfigurator.Models;
 using System;
@@ -12,12 +13,14 @@ namespace OrbitCovidConditionConfigurator.Controllers
 {
     public class ConditionController : Controller
     {
+        private static readonly ILog _log = LogManager.GetLogger(typeof(ConditionController));
         /// <summary>
-        /// 
+        /// Get All condition to show on the main page
         /// </summary>
         /// <returns></returns>
         public async Task<ActionResult> Index()
         {
+            _log.Info("Inside Index");
             return View(await ConditionStore.GetConditions(id: null, ""));
         }
         /// <summary>
@@ -32,11 +35,15 @@ namespace OrbitCovidConditionConfigurator.Controllers
             if (Request.Form["selectedIds"] != null)
             {
                 string selectedIds = Request.Form["selectedIds"].ToString();
+                _log.Info($"Inside Index - Deleting {selectedIds}");
+
                 await ConditionStore.DeleteSelectedConditions(selectedIds);
             }
             if (Request.Form["Search"] != null)
             {
                 searchText = Request.Form["Search"];
+                _log.Info($"Inside Index - Getting Condition matching searchText {searchText}");
+
             }
             return View(await ConditionStore.GetConditions(id: null, searchText));
         }
@@ -81,8 +88,9 @@ namespace OrbitCovidConditionConfigurator.Controllers
                 await InitializeCondition(condition);
                 return RedirectToAction("Index");
             }
-            catch
+            catch(Exception ex)
             {
+                _log.Error($" Create New Condition  {ex.ToString()}");
                 return View();
             }
         }
@@ -92,8 +100,12 @@ namespace OrbitCovidConditionConfigurator.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: Condition/Edit/5
-        public async Task<ActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(int? id)
         {
+            if(id == null)
+            {
+                return new HttpNotFoundResult();
+            }
             List<Condition> conditions = await ConditionStore.GetConditions(id);
 
             if (conditions != null)
@@ -103,6 +115,7 @@ namespace OrbitCovidConditionConfigurator.Controllers
             }
             else
             {
+                _log.Error($" Edit Id {id} - Not found or failed to initialise");
                 return new HttpNotFoundResult();
             }
         }
@@ -113,26 +126,35 @@ namespace OrbitCovidConditionConfigurator.Controllers
         /// <param name="collection"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Edit(int id, Condition condition)
+        public async Task<ActionResult> Edit(int? id, Condition condition)
         {
+            if (id == null)
+            {
+                return new HttpNotFoundResult();
+            }
             List<Condition> conditions = await ConditionStore.GetConditions(id);
             if (conditions != null)
             {
                 try
                 {
-                    //condition.BranchCode = conditions.FirstOrDefault().BranchCode;
                     condition.OutletCode = conditions.FirstOrDefault().OutletCode;
                     await ConditionStore.SaveCondition(condition);
-                    await InitializeCondition(condition);
+                    if(!await InitializeCondition(condition))
+                    {
+                        _log.Error($" Initialize Condition Id {id} - failed to initialise ");
+                        return new HttpNotFoundResult();
+                    }
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return View();
+                    _log.Error($" Initialize Condition Id {id} - failed to initialise {ex.ToString()}");
+                    return new HttpNotFoundResult();
                 }
             }
             else
             {
+                _log.Error($" Edit Id {id} - Not found or failed to initialise");
                 return new HttpNotFoundResult();
             }
         }
@@ -142,17 +164,26 @@ namespace OrbitCovidConditionConfigurator.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
 
-        private static async Task InitializeCondition(Condition condition)
+        private static async Task<bool> InitializeCondition(Condition condition)
         {
-            condition.Outlets = await Outlet.GetOutlets();
-            condition.Routes = RouteList.GetRoutes();
-            condition.SegmentTypes = SegmentTypeList.GetSegmentTypes();
-            condition.Brands = BrandList.GetBrands();
-            if (condition.Id == 0)
+            try
             {
-                condition.IsActive = true;
-                condition.ValidFrom = DateTime.Now;
-                condition.ValidTo = DateTime.Now.AddYears(1);
+                condition.Outlets = await Outlet.GetOutlets();
+                condition.Routes = RouteList.GetRoutes();
+                condition.SegmentTypes = SegmentTypeList.GetSegmentTypes();
+                condition.Brands = BrandList.GetBrands();
+                if (condition.Id == 0)
+                {
+                    condition.IsActive = true;
+                    condition.ValidFrom = DateTime.Now;
+                    condition.ValidTo = DateTime.Now.AddYears(1);
+                }
+                return true;
+            }
+            catch(Exception ex)
+            {
+                _log.Error($" Initialize Condition Id {condition?.Id} - failed to initialise {ex.ToString()}");
+                return false;
             }
         }
         /// <summary>
@@ -188,27 +219,7 @@ namespace OrbitCovidConditionConfigurator.Controllers
             }
             return Json(outletList, JsonRequestBehavior.AllowGet);
         }
-        // GET: Condition/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Condition/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+       
        
     }
 }

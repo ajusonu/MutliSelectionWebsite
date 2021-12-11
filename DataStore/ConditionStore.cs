@@ -39,7 +39,7 @@ namespace OrbitCovidConditionConfigurator.DataStore
             }
             catch (Exception ex)
             {
-
+                _log.Error($"OrbitCovidConditionConfigurator DeleteSelectedConditions failed {ex.ToString()}");
             }
             return null;
         }
@@ -80,7 +80,7 @@ namespace OrbitCovidConditionConfigurator.DataStore
             }
             catch (Exception ex)
             {
-
+                _log.Error($" Save Condition Error {ex.ToString()}");
             }
             return null;
         }
@@ -115,11 +115,11 @@ namespace OrbitCovidConditionConfigurator.DataStore
                         }
                     }
                 }
-                return conditions;
+                return conditions.Count ==0 ? null : conditions;
             }
             catch (Exception ex)
             {
-                
+                _log.Error($" Get Conditions Error {ex.ToString()}");
             }
             return null;
         }
