@@ -21,7 +21,12 @@ namespace OrbitCovidConditionConfigurator.Controllers
         public async Task<ActionResult> Index()
         {
             _log.Info("Inside Index");
-            return View(await ConditionStore.GetConditions(id: null, ""));
+            List<Condition> conditions = await ConditionStore.GetConditions(id: null, "");
+            if(conditions?.Count == 0)
+            {
+                return new HttpNotFoundResult();
+            }
+            return View(conditions);
         }
         /// <summary>
         /// 1-Get All conditions based on search parameters 
@@ -76,6 +81,10 @@ namespace OrbitCovidConditionConfigurator.Controllers
             if (conditions != null && conditions.Count > 0 && !string.IsNullOrEmpty(airline))
             {
                 conditions = conditions.FindAll(c => c.Airline.Equals(airline, StringComparison.OrdinalIgnoreCase));
+            }
+            if (conditions?.Count == 0)
+            {
+                return new HttpNotFoundResult();
             }
             return View(conditions);
         }

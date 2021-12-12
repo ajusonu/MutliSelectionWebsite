@@ -20,19 +20,23 @@
     List<SelectListItem> outletList = new List<SelectListItem>();
 
     outletList.Add(new SelectListItem() { Text = "Choose an outlet", Value = "", Selected = true });
-
-    foreach (string outlet in Model.GroupBy(o => o.OutletCode)?.Select(o => o.Key))
+    if (Model != null)
     {
-        outletList.Add(new SelectListItem() { Text = outlet, Value = outlet, Selected = false });
+        foreach (string outlet in Model?.GroupBy(o => o.OutletCode)?.Select(o => o.Key))
+        {
+            outletList.Add(new SelectListItem() { Text = outlet, Value = outlet, Selected = false });
+        }
     }
 
     List<SelectListItem> airlineList = new List<SelectListItem>();
 
     airlineList.Add(new SelectListItem() { Text = "Choose an airline", Value = "", Selected = true });
-
-    foreach (string airline in Model.GroupBy(o => o.Airline)?.Select(o => o.Key))
+    if (Model != null)
     {
-        airlineList.Add(new SelectListItem() { Text = airline, Value = airline, Selected = false });
+        foreach (string airline in Model?.GroupBy(o => o.Airline)?.Select(o => o.Key))
+        {
+            airlineList.Add(new SelectListItem() { Text = airline, Value = airline, Selected = false });
+        }
     }
 }
 

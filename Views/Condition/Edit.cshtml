@@ -86,9 +86,11 @@
     <div class="form-group">
         @Html.LabelFor(model => model.OutletCode, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.TextBoxFor(model => model.OutletCode, new { htmlAttributes = new { @class = "form-control" } })
-         </div>
+            @Html.DropDownListFor(model => model.OutletCode, outletList, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.OutletCode, "", new { @class = "text-danger" })
+        </div>
     </div>
+
 
     <div id="divBranch" class="form-group">
         @Html.Label("Add Branch", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -165,9 +167,7 @@
             $("#Id").prop("readonly", true);
             $("#Id").css("background", "LightGrey");
 
-            $("#OutletCode").prop("readonly", true);
-            $("#OutletCode").css("background", "LightGrey");
-
+   
             $("#Route").prop("readonly", true);
             $("#Route").css("background", "LightGrey");
             $("#ValidFrom").val(formatDate($("#ValidFrom").val()));
