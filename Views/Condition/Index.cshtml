@@ -2,6 +2,38 @@
 
 @{
     ViewBag.Title = "Index";
+
+    List<SelectListItem> segmentListItem = new List<SelectListItem>();
+    segmentListItem.Add(new SelectListItem() { Text = "Choose item type", Value = "-1", Selected = true });
+
+    foreach (OrbitCovidConditionConfigurator.Enums.SegmentType segmentType in OrbitCovidConditionConfigurator.Enums.SegmentTypeList.GetSegmentTypes())
+    {
+        segmentListItem.Add(new SelectListItem() { Text = segmentType.ToString(), Value = ((int)segmentType).ToString(), Selected = false });
+    }
+    List<SelectListItem> brandListItem = new List<SelectListItem>();
+    brandListItem.Add(new SelectListItem() { Text = "Choose Brand", Value = "-1", Selected = true });
+
+    foreach (OrbitCovidConditionConfigurator.Enums.Brand brand in OrbitCovidConditionConfigurator.Enums.BrandList.GetBrands())
+    {
+        brandListItem.Add(new SelectListItem() { Text = brand.ToString(), Value = ((int)brand).ToString(), Selected = false });
+    }
+    List<SelectListItem> outletList = new List<SelectListItem>();
+
+    outletList.Add(new SelectListItem() { Text = "Choose an outlet", Value = "", Selected = true });
+
+    foreach (string outlet in Model.GroupBy(o => o.OutletCode)?.Select(o => o.Key))
+    {
+        outletList.Add(new SelectListItem() { Text = outlet, Value = outlet, Selected = false });
+    }
+
+    List<SelectListItem> airlineList = new List<SelectListItem>();
+
+    airlineList.Add(new SelectListItem() { Text = "Choose an airline", Value = "", Selected = true });
+
+    foreach (string airline in Model.GroupBy(o => o.Airline)?.Select(o => o.Key))
+    {
+        airlineList.Add(new SelectListItem() { Text = airline, Value = airline, Selected = false });
+    }
 }
 
 <h2>Index</h2>
@@ -17,9 +49,23 @@
                     @Html.TextBox("Search")
                 </td>
                 <td>
-                    <input type="submit" value="Search" class="btn-primary" />
+                    @Html.DropDownList("SegmentType", segmentListItem, new { htmlAttributes = new { @class = "form-control" } })
+
                 </td>
                 <td>
+                    @Html.DropDownList("Brand", brandListItem, new { htmlAttributes = new { @class = "form-control" } })
+
+                </td>
+                <td>
+                    @Html.DropDownList("Outlet", outletList, new { htmlAttributes = new { @class = "form-control" } })
+
+                </td>
+                <td>
+                    @Html.DropDownList("Airline", airlineList, new { htmlAttributes = new { @class = "form-control" } })
+
+                </td>
+                <td>
+                    <input type="submit" value="Search" class="btn-primary" />
                 </td>
 
             </tr>
@@ -79,47 +125,47 @@
 
                 @foreach (var item in Model)
                 {
-            <tr>
-                <td>
-                    <a class="btn btn-xs" onclick="location.href='@Url.Action("Edit", "Condition", new { id = item.Id})'">Edit</a>
-                    <a class="btn btn-primary btn-xs" onclick="location.href='@Url.Action("Details", "Condition", new { id = item.Id})'">Details</a>
-                </td>
-                <td>
-                    <input name="selectedIds" type="checkbox" class="check" value="@item.Id" />
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValidFrom, new { @Value = item.ValidFrom.ToString("yyyy/MM/dd") })
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValidTo, new { @Value = item.ValidTo.ToString("yyyy/MM/dd") })
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsActive)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Brand)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OutletCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SegmentType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Airline)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Route)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.BranchCode)
-                </td>
+                    <tr>
+                        <td>
+                            <a class="btn btn-primary btn-xs" onclick="location.href='@Url.Action("Edit", "Condition", new { id = item.Id})'">Edit</a>
+                            <a class="btn btn-info btn-xs" onclick="DetailsColorBoxPopup(@item.Id)">Details</a>
+                        </td>
+                        <td>
+                            <input name="selectedIds" type="checkbox" class="check" value="@item.Id" />
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValidFrom, new { @Value = item.ValidFrom.ToString("yyyy/MM/dd") })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValidTo, new { @Value = item.ValidTo.ToString("yyyy/MM/dd") })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Brand)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OutletCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SegmentType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Airline)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Route)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BranchCode)
+                        </td>
 
 
-            </tr>
+                    </tr>
                 }
 
                 <tr>
@@ -131,11 +177,19 @@
         </div>
     }
     <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/colorbox.css" rel="stylesheet" />
+
     @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")
         <script src="~/Scripts/jquery-ui-1.13.0.min.js"></script>
+        <link href=@Url.Content("~/Content/colorbox.css") rel="stylesheet" />
         <script>
-
+               function DetailsColorBoxPopup(id) {
+                $.colorbox({
+                    opacity: 0.55, transition: 'none', reposition: true, width: "50%", height: "40%", iframe: true,
+                    href: "/Condition/Details/" + id
+                });
+            }
         </script>
 
     }

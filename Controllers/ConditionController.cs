@@ -24,7 +24,8 @@ namespace OrbitCovidConditionConfigurator.Controllers
             return View(await ConditionStore.GetConditions(id: null, ""));
         }
         /// <summary>
-        /// Get All conditions
+        /// 1-Get All conditions based on search parameters 
+        /// 2-Delete selected Conditions
         /// </summary>
         /// <returns></returns>
         /// 
@@ -32,6 +33,10 @@ namespace OrbitCovidConditionConfigurator.Controllers
         public async Task<ActionResult> Index(FormCollection form)
         {
             string searchText = string.Empty;
+            int segmentType = -1;
+            int brand = -1;
+            string outlet = string.Empty;
+            string airline = string.Empty;
             if (Request.Form["selectedIds"] != null)
             {
                 string selectedIds = Request.Form["selectedIds"].ToString();
@@ -42,10 +47,37 @@ namespace OrbitCovidConditionConfigurator.Controllers
             if (Request.Form["Search"] != null)
             {
                 searchText = Request.Form["Search"];
+                segmentType = int.Parse(Request.Form["SegmentType"]);
+                brand = int.Parse(Request.Form["Brand"]);
+                outlet = Request.Form["Outlet"];
+                airline = Request.Form["Airline"];
+
                 _log.Info($"Inside Index - Getting Condition matching searchText {searchText}");
 
             }
-            return View(await ConditionStore.GetConditions(id: null, searchText));
+
+            List<Condition> conditions = await ConditionStore.GetConditions(id: null, searchText);
+            //Segment Type filter
+            if(conditions != null && conditions.Count > 0 && segmentType != -1)
+            {
+                conditions =  conditions.FindAll(c => c.SegmentType == (SegmentType)segmentType);
+            }
+            //brand filter
+            if (conditions != null && conditions.Count > 0 && brand != -1)
+            {
+                conditions = conditions.FindAll(c => c.Brand == (Brand)brand);
+            }
+            //outlet filter
+            if (conditions != null && conditions.Count > 0 && !string.IsNullOrEmpty(outlet))
+            {
+                conditions = conditions.FindAll(c => c.OutletCode.Equals(outlet, StringComparison.OrdinalIgnoreCase));
+            }
+            //airline filter
+            if (conditions != null && conditions.Count > 0 && !string.IsNullOrEmpty(airline))
+            {
+                conditions = conditions.FindAll(c => c.Airline.Equals(airline, StringComparison.OrdinalIgnoreCase));
+            }
+            return View(conditions);
         }
         /// <summary>
         /// Get the condition Details for Id
@@ -53,8 +85,12 @@ namespace OrbitCovidConditionConfigurator.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         // GET: Condition/Details/5
-        public async Task<ActionResult> Details(int id)
+        public async Task<ActionResult> Details(int? id)
         {
+            if (id == null)
+            {
+                return new HttpNotFoundResult();
+            }
             List<Condition> conditions = await ConditionStore.GetConditions(id);
             if (conditions != null)
             {

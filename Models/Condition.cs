@@ -104,5 +104,9 @@ namespace OrbitCovidConditionConfigurator.Models
         /// Brand List
         /// </summary>
         public List<Brand> Brands { get; set; }
+        /// <summary>
+        /// Search Parameter passed
+        /// </summary>
+        public SearchParameter SearchParameter { get; set; }
     }
 }
